@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import useLocalStorage from './hooks/useLocalStorage'
+import { useState, useEffect } from 'react'
 import { Toast } from './components/Toast'
 import { DownloadProgress } from './components/DownloadProgress'
+import useLocalStorage from './hooks/useLocalStorage'
 
 function App() {
   const [url, setUrl] = useState('')
@@ -44,9 +43,7 @@ function App() {
 
       const response = await fetch(`${API_BASE}/api/video-info`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       })
 
@@ -74,9 +71,7 @@ function App() {
 
       const response = await fetch(`${API_BASE}/api/download?format_id=${selectedFormat}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
       })
 
@@ -93,7 +88,6 @@ function App() {
 
       while (true) {
         const { done, value } = await reader.read()
-
         if (done) break
 
         chunks.push(value)
@@ -118,7 +112,7 @@ function App() {
           title: videoInfo.title,
           thumbnail: videoInfo.thumbnail,
           timestamp: new Date().toISOString(),
-          format: videoInfo.formats.find(f => f.format_id === selectedFormat)?.quality
+          format: videoInfo.formats.find(f => f.format_id === selectedFormat)?.quality,
         },
         ...prev.slice(0, 9),
       ])
@@ -136,10 +130,10 @@ function App() {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <Toast {...toast} />
-      {/* Rest of the component */}
-      {isDownloading && (
-        <DownloadProgress progress={downloadProgress} />
-      )}
+      
+      {/* Add your UI here - inputs, buttons, video info display, etc. */}
+
+      {isDownloading && <DownloadProgress progress={downloadProgress} />}
     </div>
   )
 }
