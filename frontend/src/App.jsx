@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import  useLocalStorage  from './hooks/useLocalStorage'
+import useLocalStorage from './hooks/useLocalStorage'
 import { Toast } from './components/Toast'
 import { VideoCard } from './components/VideoCard'
 import { DownloadProgress } from './components/DownloadProgress'
@@ -16,6 +16,8 @@ function App() {
   const [downloadProgress, setDownloadProgress] = useState(0)
   const [isDownloading, setIsDownloading] = useState(false)
   const [toast, setToast] = useState({ show: false, message: '', type: 'info' })
+
+  const API_BASE = 'https://yt-downloader-7oz6.onrender.com'
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode)
@@ -40,8 +42,8 @@ function App() {
     try {
       setLoading(true)
       setError(null)
-      
-      const response = await fetch('http://localhost:8000/api/video-info', {
+
+      const response = await fetch(`${API_BASE}/api/video-info`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ function App() {
       setIsDownloading(true)
       setDownloadProgress(0)
 
-      const response = await fetch(`http://localhost:8000/api/download?format_id=${selectedFormat}`, {
+      const response = await fetch(`${API_BASE}/api/download?format_id=${selectedFormat}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,12 +92,10 @@ function App() {
       let receivedLength = 0
       const chunks = []
 
-      while(true) {
-        const {done, value} = await reader.read()
+      while (true) {
+        const { done, value } = await reader.read()
 
-        if (done) {
-          break
-        }
+        if (done) break
 
         chunks.push(value)
         receivedLength += value.length
@@ -113,8 +113,7 @@ function App() {
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(downloadUrl)
-      
-      // Add to download history
+
       setDownloadHistory(prev => [
         {
           title: videoInfo.title,
@@ -122,7 +121,7 @@ function App() {
           timestamp: new Date().toISOString(),
           format: videoInfo.formats.find(f => f.format_id === selectedFormat)?.quality
         },
-        ...prev.slice(0, 9), // Keep only last 10 items
+        ...prev.slice(0, 9),
       ])
 
       showToast('Download completed successfully', 'success')
@@ -138,9 +137,7 @@ function App() {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <Toast {...toast} />
-      
-      {/* Rest of the component remains the same */}
-      
+      {/* Rest of the component */}
       {isDownloading && (
         <DownloadProgress progress={downloadProgress} />
       )}
